@@ -1,1 +1,4 @@
 jdk: openjdk11
+install:
+  - ./gradlew android-reactive-location:build :android-reactive-location:publishToMavenLocal
+  - find . -name "*.aar"

@@ -1,9 +1,13 @@
 package pl.charmas.android.reactivelocation2.sample;
 
+import static pl.charmas.android.reactivelocation2.sample.utils.UnsubscribeIfPresent.dispose;
+
+import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Address;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,6 +23,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.List;
 
@@ -35,8 +40,6 @@ import pl.charmas.android.reactivelocation2.sample.utils.DetectedActivityToStrin
 import pl.charmas.android.reactivelocation2.sample.utils.DisplayTextOnViewAction;
 import pl.charmas.android.reactivelocation2.sample.utils.LocationToStringFunc;
 import pl.charmas.android.reactivelocation2.sample.utils.ToMostProbableActivity;
-
-import static pl.charmas.android.reactivelocation2.sample.utils.UnsubscribeIfPresent.dispose;
 
 public class MainActivity extends BaseActivity {
     private final static int REQUEST_CHECK_SETTINGS = 0;
@@ -127,9 +130,28 @@ public class MainActivity extends BaseActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            disposable.add(new RxPermissions(this)
+                    .request(Manifest.permission.ACTIVITY_RECOGNITION)
+                    .subscribe(granted -> {
+                        if (granted) {
+                            onActivityPermissionGranted();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Sorry, no demo without permission...", Toast.LENGTH_SHORT).show();
+                        }
+                    }));
+        }
+    }
+
+    protected void onActivityPermissionGranted() {
         activityObservable = locationProvider
                 .getDetectedActivity(50)
                 .observeOn(AndroidSchedulers.mainThread());
+
+        activityDisposable = activityObservable
+                .map(new ToMostProbableActivity())
+                .map(new DetectedActivityToString())
+                .subscribe(new DisplayTextOnViewAction(currentActivityView), new ErrorHandler());
     }
 
     @Override
@@ -150,14 +172,8 @@ public class MainActivity extends BaseActivity {
                 })
                 .subscribe(new DisplayTextOnViewAction(updatableLocationView), new ErrorHandler());
 
-
         addressDisposable = addressObservable
                 .subscribe(new DisplayTextOnViewAction(addressLocationView), new ErrorHandler());
-
-        activityDisposable = activityObservable
-                .map(new ToMostProbableActivity())
-                .map(new DetectedActivityToString())
-                .subscribe(new DisplayTextOnViewAction(currentActivityView), new ErrorHandler());
     }
 
     @Override
@@ -210,23 +226,21 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         final LocationSettingsStates states = LocationSettingsStates.fromIntent(data);//intent);
-        switch (requestCode) {
-            case REQUEST_CHECK_SETTINGS:
-                //Reference: https://developers.google.com/android/reference/com/google/android/gms/location/SettingsApi
-                switch (resultCode) {
-                    case RESULT_OK:
-                        // All required changes were successfully made
-                        Log.d(TAG, "User enabled location");
-                        break;
-                    case RESULT_CANCELED:
-                        // The user was asked to change settings, but chose not to
-                        Log.d(TAG, "User Cancelled enabling location");
-                        break;
-                    default:
-                        break;
-                }
-                break;
+        if (requestCode == REQUEST_CHECK_SETTINGS) {//Reference: https://developers.google.com/android/reference/com/google/android/gms/location/SettingsApi
+            switch (resultCode) {
+                case RESULT_OK:
+                    // All required changes were successfully made
+                    Log.d(TAG, "User enabled location");
+                    break;
+                case RESULT_CANCELED:
+                    // The user was asked to change settings, but chose not to
+                    Log.d(TAG, "User Cancelled enabling location");
+                    break;
+                default:
+                    break;
+            }
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }

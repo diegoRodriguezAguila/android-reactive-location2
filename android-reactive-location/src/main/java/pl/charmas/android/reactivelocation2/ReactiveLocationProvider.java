@@ -1,5 +1,6 @@
 package pl.charmas.android.reactivelocation2;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.location.Address;
@@ -349,9 +350,11 @@ public class ReactiveLocationProvider {
      * @param placeFilter filter
      * @return observable that emits current places buffer and completes
      */
+    @RequiresPermission("android.permission.ACCESS_FINE_LOCATION")
     public Observable<PlaceLikelihoodBuffer> getCurrentPlace(@Nullable final PlaceFilter placeFilter) {
         return getGoogleApiClientObservable(Places.PLACE_DETECTION_API, Places.GEO_DATA_API)
                 .flatMap(new Function<GoogleApiClient, Observable<PlaceLikelihoodBuffer>>() {
+                    @SuppressLint("MissingPermission")
                     @Override
                     public Observable<PlaceLikelihoodBuffer> apply(GoogleApiClient api) {
                         return fromPendingResult(Places.PlaceDetectionApi.getCurrentPlace(api, placeFilter));

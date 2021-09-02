@@ -58,7 +58,7 @@ class FallbackReverseGeocodeObservable implements ObservableOnSubscribe<List<Add
      */
     private List<Address> alternativeReverseGeocodeQuery() throws IOException, JSONException {
         URL url = new URL(String.format(Locale.ENGLISH,
-                "http://maps.googleapis.com/maps/api/geocode/json?"
+                "https://maps.googleapis.com/maps/api/geocode/json?"
                         + "latlng=%1$f,%2$f&sensor=true&language=%3$s",
                 latitude, longitude, locale.getLanguage()
         ));
