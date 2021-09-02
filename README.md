@@ -1,7 +1,7 @@
 ReactiveLocation library for Android
 ====================================
 
-Current stable version - 2.3
+Current stable version - 2.4
 ---------------
 
 **This version works with Google Play Services 11+ and RxJava 2.+ and Android 12**
@@ -16,7 +16,7 @@ Add dependency:
     
     dependencies {
         ...
-        implementation 'com.github.diegoRodriguezAguila:android-reactive-location2:2.3'
+        implementation 'com.github.diegoRodriguezAguila:android-reactive-location2:2.4'
    }
 ```
 
