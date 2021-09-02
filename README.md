@@ -1,21 +1,24 @@
 ReactiveLocation library for Android
 ====================================
 
-Small library that wraps Google Play Services API in brilliant [RxJava](https://github.com/ReactiveX/RxJava)
-```Observables``` reducing boilerplate to minimum.
-
-Current stable version - 2.1
+Current stable version - 2.3
 ---------------
 
-**This version works with Google Play Services 11+ and RxJava 2.+**
+**This version works with Google Play Services 11+ and RxJava 2.+ and Android 12**
 
 Artifact name: ```android-reactive-location2```
-
-RxJava1 stable version - 1.0
---------------
-**RxJava1 version:**
-
-Artifact name: ```android-reactive-location```
+Add dependency:
+```
+     repositories {
+        ...
+        maven { url "https://jitpack.io" }
+    }
+    
+    dependencies {
+        ...
+        implementation 'com.github.diegoRodriguezAguila:android-reactive-location2:2.3'
+   }
+```
 
 What can you do with that?
 --------------------------
