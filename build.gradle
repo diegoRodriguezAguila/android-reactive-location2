@@ -2,20 +2,20 @@
 
 buildscript {
     repositories {
+        google()
         mavenCentral()
-        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:7.0.2'
     }
 }
 
 // To avoid manually setting the same values in all Android modules, set the value on the root
 // project and then reference this from the modules
 ext {
-    compileSdkVersion = 25
-    targetSdkVersion = 25
-    buildToolsVersion = "25.0.3"
+    compileSdkVersion = 31
+    targetSdkVersion = 31
+    buildToolsVersion = "31.0.0"
 }
 
 def isReleaseBuild() {
@@ -27,7 +27,8 @@ allprojects {
     group = GROUP
 
     repositories {
+        maven { url 'https://jitpack.io' }
+        google()
         mavenCentral()
-        jcenter()
     }
 }
